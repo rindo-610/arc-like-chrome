@@ -1,0 +1,366 @@
+:root {
+  --bg: #ece9e4;
+  --fg: #1d1d1f;
+  --muted: #8a8a8e;
+  --hover: rgba(0, 0, 0, 0.055);
+  --active: rgba(255, 255, 255, 0.92);
+  --active-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+  --tile: rgba(0, 0, 0, 0.045);
+  --accent: #5b6cff;
+  --menu-bg: rgba(250, 250, 250, 0.98);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #232326;
+    --fg: #ececec;
+    --muted: #8d8d92;
+    --hover: rgba(255, 255, 255, 0.06);
+    --active: rgba(255, 255, 255, 0.13);
+    --active-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+    --tile: rgba(255, 255, 255, 0.06);
+    --menu-bg: rgba(44, 44, 48, 0.98);
+  }
+}
+
+/* スペースの色で背景をほんのり染める（--space は sidepanel.js が入れる） */
+:root { --space: transparent; --tinted-bg: color-mix(in srgb, var(--space) 9%, var(--bg)); }
+
+* { box-sizing: border-box; }
+/* 横スワイプをページ側の「戻る」に渡さない（サイドバーの上ではスペースの切り替えに使う） */
+html, body { height: 100%; overscroll-behavior: none; }
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  height: auto;
+  margin: 0;
+  padding: 10px 8px 52px;
+  background: var(--tinted-bg);
+  transition: background 0.25s var(--ease);
+  color: var(--fg);
+  font: 13px/1.35 -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+html.overlay body { padding-top: 12px; }
+button { font: inherit; color: inherit; }
+
+.icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- Favorites ---- */
+.favorites {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--tile);
+  cursor: default;
+  transition: background 0.15s var(--ease), transform 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+.tile:hover { background: var(--hover); }
+.tile:active { transform: scale(0.96); }
+.tile img { width: 18px; height: 18px; transition: opacity 0.15s; }
+.tile.closed img { opacity: 0.55; }
+.tile.active { background: var(--active); box-shadow: var(--active-shadow); }
+
+/* ---- 行 ---- */
+.space-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 8px 8px 4px;
+}
+.space-name:empty { display: none; }
+.tree { position: relative; }
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 6px 0 8px;
+  border-radius: 8px;
+  cursor: default;
+  transition: background 0.12s var(--ease), box-shadow 0.12s var(--ease), opacity 0.15s;
+}
+.row:hover { background: var(--hover); }
+.row.active { background: var(--active); box-shadow: var(--active-shadow); }
+.row .title { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.row.closed .title { color: var(--muted); }
+.row.closed .favicon img { opacity: 0.6; }
+
+.favicon { position: relative; width: 16px; height: 16px; flex: none; }
+.favicon img { width: 16px; height: 16px; display: block; transition: opacity 0.12s; }
+.favicon .icon { color: var(--muted); }
+
+.close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  color: var(--muted);
+  opacity: 0;
+  flex: none;
+  transition: opacity 0.12s, background 0.12s;
+}
+.close .icon { width: 12px; height: 12px; stroke-width: 1.7; }
+.row:hover .close { opacity: 1; }
+.close:hover { background: var(--hover); color: var(--fg); }
+
+/* フォルダ */
+.row.folder .icon.folder-icon { color: var(--muted); }
+.children {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.2s var(--ease);
+}
+.children.collapsed { grid-template-rows: 0fr; }
+.children > .inner { overflow: hidden; min-height: 0; padding-left: 14px; }
+
+.view { display: flex; flex-direction: column; flex: 1 0 auto; }
+.view[hidden] { display: none; }
+
+/* 今日のタブの欄はパネルの下まで伸ばし、どこに落としてもピン留めを外せるようにする */
+.today-section { flex: 1 0 auto; border-radius: 10px; transition: background 0.12s; }
+.today-section.drop-zone { background: rgba(91, 108, 255, 0.06); }
+
+/* 仕切り線。カーソルを当てると右端に Clear が出る（Arc と同じ） */
+.divider-row { position: relative; display: flex; align-items: center; height: 20px; margin: 2px 8px; }
+.divider { flex: 1; height: 1px; background: var(--hover); }
+.clear {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 6px;
+  padding: 1px 6px 1px 4px;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  color: var(--muted);
+  font-size: 11px;
+  opacity: 0;
+  transition: opacity 0.12s, background 0.12s;
+}
+.clear .icon { width: 12px; height: 12px; }
+.divider-row:hover .clear { opacity: 1; }
+.clear:hover { background: var(--hover); color: var(--fg); }
+
+/* 下端のバー: アーカイブ、スペースの切り替え、スペースの追加 */
+.space-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 40px;
+  padding: 0 8px;
+  background: var(--tinted-bg);
+  transition: background 0.25s var(--ease);
+}
+.space-dots { flex: 1; display: flex; justify-content: center; align-items: center; gap: 2px; min-width: 0; overflow: hidden; }
+.icon-button, .space-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--muted);
+  transition: background 0.12s, color 0.12s;
+}
+.icon-button:hover, .space-dot:hover { background: var(--hover); color: var(--fg); }
+.space-dot::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--dot, var(--muted));
+  opacity: 0.45;
+  transition: transform 0.15s var(--ease), opacity 0.15s;
+}
+.space-dot.current::before { opacity: 1; transform: scale(1.35); }
+/* アイコン（絵文字）があるスペースは点の代わりに絵文字を出す */
+.space-dot.has-icon::before { display: none; }
+.space-emoji { font-size: 14px; line-height: 1; opacity: 0.5; filter: grayscale(0.4); transition: opacity 0.15s, filter 0.15s, transform 0.15s var(--ease); }
+.space-dot.current .space-emoji { opacity: 1; filter: none; transform: scale(1.15); }
+.space-dot.current.has-icon { background: var(--hover); }
+
+.space-name { display: flex; align-items: center; gap: 6px; }
+.space-icon { font-size: 13px; line-height: 1; cursor: default; border-radius: 4px; padding: 1px; }
+.space-icon:hover { background: var(--hover); }
+
+/* アイコンを選ぶ小さなパネル */
+.icon-picker {
+  position: fixed;
+  z-index: 11;
+  width: 212px;
+  padding: 6px;
+  border-radius: 10px;
+  background: var(--menu-bg);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.1);
+  animation: pop 0.1s var(--ease);
+}
+.icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; }
+.icon-choice {
+  height: 30px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font-size: 17px;
+  line-height: 1;
+}
+.icon-choice:hover { background: var(--hover); }
+.icon-picker-foot { display: flex; gap: 4px; margin-top: 6px; }
+
+/* スペースを切り替えたときに、中身を横から滑り込ませる */
+.slide-left { animation: slide-left 0.2s var(--ease); }
+.slide-right { animation: slide-right 0.2s var(--ease); }
+@keyframes slide-left { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+@keyframes slide-right { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+
+/* アーカイブ */
+.archive-head { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; }
+.search {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--hover);
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+.search:focus { box-shadow: 0 0 0 1.5px var(--accent); }
+.row .meta { flex: none; font-size: 11px; color: var(--muted); }
+.row:hover .meta { display: none; }
+.new-tab { color: var(--muted); }
+.new-tab:hover { color: var(--fg); }
+
+/* 追加された行はふわっと出す */
+.enter { animation: enter 0.18s var(--ease); }
+@keyframes enter {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---- ドラッグ＆ドロップ ---- */
+.dragging { opacity: 0.35; }
+.drop-before::before, .drop-after::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+.drop-before::before { top: -1px; }
+.drop-after::after { bottom: -1px; }
+.tile.drop-before::before, .tile.drop-after::after {
+  top: 6px;
+  bottom: 6px;
+  left: auto;
+  right: auto;
+  width: 2px;
+  height: auto;
+}
+.tile.drop-before::before { left: -4px; }
+.tile.drop-after::after { right: -4px; }
+.drop-into { background: rgba(91, 108, 255, 0.14) !important; }
+/* ドラッグ中だけ、空の Favorites とピン留め欄に落とし先を出す */
+body.is-dragging .drop-area:empty {
+  min-height: 42px;
+  border-radius: 10px;
+  border: 1.5px dashed rgba(91, 108, 255, 0.35);
+}
+.drop-area.drop-zone { background: rgba(91, 108, 255, 0.08); border-radius: 10px; }
+
+/* ---- 名前変更 ---- */
+.rename {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  color: inherit;
+  background: var(--active);
+  border: 0;
+  outline: 1.5px solid var(--accent);
+  border-radius: 4px;
+  padding: 2px 4px;
+  margin-left: -4px;
+}
+
+/* ---- 右クリックのメニュー ---- */
+.menu {
+  position: fixed;
+  z-index: 10;
+  min-width: 160px;
+  padding: 4px;
+  border-radius: 8px;
+  background: var(--menu-bg);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.1);
+  animation: pop 0.1s var(--ease);
+}
+@keyframes pop { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
+.menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+.menu-item:hover { background: var(--accent); color: #fff; }
+.menu-item.danger { color: #e5484d; }
+.menu-item.danger:hover { background: #e5484d; color: #fff; }
+.menu-sep { height: 1px; margin: 4px 6px; background: var(--hover); }
+
+.toast {
+  position: fixed;
+  left: 8px;
+  right: 8px;
+  bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(229, 72, 77, 0.95);
+  color: #fff;
+  font-size: 12px;
+}
+
+/* Split View のペア: アイコンを 2 つ少し重ねて並べる */
+.favicon-pair { position: relative; display: flex; align-items: center; width: 26px; height: 16px; flex: none; }
+.favicon-pair img { width: 16px; height: 16px; border-radius: 4px; background: var(--tinted-bg); }
+.favicon-pair img + img { margin-left: -6px; box-shadow: -1.5px 0 0 var(--tinted-bg); }
+.row.closed .favicon-pair img { opacity: 0.6; }

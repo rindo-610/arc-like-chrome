@@ -1,0 +1,15 @@
+body { font: 13px/1.5 -apple-system, BlinkMacSystemFont, sans-serif; margin: 16px; color: #222; }
+form { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 8px; }
+input[type="number"] { width: 6em; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid #ddd; padding: 4px 6px; text-align: left; vertical-align: top; }
+td:last-child { font-family: ui-monospace, monospace; font-size: 11px; word-break: break-all; }
+tr.little td:nth-child(2) { color: #0a7; font-weight: 600; }
+tr.error td:nth-child(2) { color: #c00; font-weight: 600; }
+tr.move td:nth-child(2) { color: #06c; }
+pre { background: #f5f5f5; padding: 8px; font-size: 11px; max-height: 300px; overflow: auto; }
+@media (prefers-color-scheme: dark) {
+  body { background: #1e1e1e; color: #ddd; }
+  th, td { border-color: #333; }
+  pre { background: #2a2a2a; }
+}

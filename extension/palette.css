@@ -1,0 +1,98 @@
+:root {
+  --bg: rgba(250, 249, 247, 0.98);
+  --fg: #1d1d1f;
+  --muted: #8a8a8e;
+  --line: rgba(0, 0, 0, 0.07);
+  --selected: rgba(91, 108, 255, 0.12);
+  --accent: #5b6cff;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: rgba(38, 38, 42, 0.98);
+    --fg: #ececec;
+    --muted: #8d8d92;
+    --line: rgba(255, 255, 255, 0.08);
+    --selected: rgba(120, 135, 255, 0.2);
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; background: transparent; }
+body {
+  color: var(--fg);
+  font: 14px/1.35 -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.bar {
+  background: var(--bg);
+  border-radius: 14px;
+  overflow: hidden;
+}
+/* 重ねて出すとき（iframe）は外側の枠と影を cmdbar.js が付ける。小さなウィンドウではウィンドウいっぱいに出す */
+body.popup .bar { border-radius: 0; min-height: 100vh; }
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 54px;
+  padding: 0 16px;
+}
+.lead { display: flex; width: 18px; height: 18px; flex: none; color: var(--muted); }
+.lead img, .lead svg { width: 18px; height: 18px; }
+.q {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 18px;
+}
+.q::placeholder { color: var(--muted); }
+
+.results { border-top: 1px solid var(--line); padding: 6px; }
+.results:empty { display: none; }
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 8px;
+  cursor: default;
+}
+.row.selected { background: var(--selected); }
+.row img, .row svg { width: 16px; height: 16px; flex: none; }
+.row svg { color: var(--muted); }
+.row .title { flex: 0 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.row .sub { flex: 1 1 0; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--muted); font-size: 12px; }
+.row .tag { flex: none; color: var(--muted); font-size: 12px; opacity: 0; transition: opacity 0.1s; }
+.row.selected .tag { opacity: 1; }
+
+.icon { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* 新しいタブページ: 画面の上寄りに置く */
+body.newtab { min-height: 100vh; background: #ece9e4; }
+@media (prefers-color-scheme: dark) { body.newtab { background: #232326; } }
+body.newtab .bar {
+  width: min(680px, 92vw);
+  margin: 18vh auto 0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+}
+
+/* 新しいタブページの左端ホバー（ntp-edge.js）。サイドバー拡張の edge.js と同じ見た目 */
+.edge-hot { position: fixed; left: 0; top: 0; bottom: 0; width: 4px; z-index: 20; }
+.edge-panel {
+  position: fixed; left: 6px; top: 6px; bottom: 6px; width: var(--w, 240px); z-index: 21;
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28), 0 0 0 0.5px rgba(0, 0, 0, 0.18);
+  transform: translateX(calc(-100% - 16px)); opacity: 0; visibility: hidden;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s;
+}
+.edge-panel.open { transform: none; opacity: 1; visibility: visible; }
+.edge-panel iframe { display: block; width: 100%; height: 100%; border: 0; }

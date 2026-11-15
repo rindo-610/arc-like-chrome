@@ -1,0 +1,3 @@
+body { font: 13px/1.5 -apple-system, BlinkMacSystemFont, sans-serif; margin: 16px; }
+pre { font-size: 12px; white-space: pre-wrap; }
+@media (prefers-color-scheme: dark) { body { background: #1e1e1e; color: #ddd; } }

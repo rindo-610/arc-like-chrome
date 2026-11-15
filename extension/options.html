@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Arc-like の設定</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <label>
+    触っていないタブを自動でアーカイブ
+    <select id="archive">
+      <option value="0">しない</option>
+      <option value="6">6 時間後</option>
+      <option value="12">12 時間後</option>
+      <option value="24">24 時間後</option>
+      <option value="72">3 日後</option>
+      <option value="168">7 日後</option>
+    </select>
+  </label>
+  <div id="saved" class="saved"></div>
+
+  <section id="shared" hidden>
+    <h2>以前の共通 Favorites</h2>
+    <p class="note">Favorites はスペースごとになりました。以前の全スペース共通の Favorites（<span id="shared-count"></span> 件）は、移すまで全スペースに出ています。移すスペースを選んでください。</p>
+    <label>
+      <select id="shared-target"></select>
+      <button id="shared-move" type="button">移す</button>
+    </label>
+    <div id="shared-status" class="status"></div>
+  </section>
+
+  <h2>Arc から取り込む</h2>
+  <p class="note">
+    Arc の <code>~/Library/Application Support/Arc/StorableSidebar.json</code> を選ぶと、スペース・Favorites・ピン留め・フォルダを取り込みます。
+    ファイルを選ぶ画面で Cmd+Shift+G を押し、上の場所を貼り付けると開けます。
+    今あるものは消さず、足すだけです（同じ名前のスペースにはまとめ、同じ URL は飛ばします）。今日のタブは取り込みません。
+  </p>
+  <input id="arc-file" type="file" accept=".json,application/json">
+  <div id="arc-preview" class="preview" hidden></div>
+  <button id="arc-import" type="button" hidden>取り込む</button>
+  <div id="arc-status" class="status"></div>
+
+  <h2>Live Folders（GitHub）</h2>
+  <p class="note">
+    レビュー依頼と自分の PR を、スペースの中のフォルダ「レビュー依頼」「自分の PR」に書き出します。
+    GitHub の fine-grained personal access token（Repository permissions の Pull requests を Read-only、ほかはなし）を入れてください。
+    見えるのは、トークンに許可したリポジトリの PR だけです。トークンはこのパソコンの中（chrome.storage.local）にだけ保存し、api.github.com 以外には送りません。
+  </p>
+  <label>
+    トークン
+    <input id="lf-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_...">
+  </label>
+  <label>
+    書き出すスペース
+    <select id="lf-space"></select>
+  </label>
+  <label>
+    更新の間隔
+    <select id="lf-interval">
+      <option value="5">5 分</option>
+      <option value="10">10 分</option>
+      <option value="30">30 分</option>
+      <option value="60">1 時間</option>
+    </select>
+  </label>
+  <p>
+    <button id="lf-save" type="button">保存</button>
+    <button id="lf-refresh" type="button">今すぐ更新</button>
+    <button id="lf-clear" type="button">トークンを消す</button>
+  </p>
+  <div id="lf-status" class="status"></div>
+
+  <h2>書き出しと読み込み</h2>
+  <p class="note">
+    スペースのアイコンと色、分割のペア、閉じたフォルダ、アーカイブ、設定を JSON に書き出し、別の場所に入れたこの拡張へ読み込めます。
+    ピン留めや Favorites はブックマークにあるので、ここには含みません。GitHub のトークンも含みません。
+  </p>
+  <p>
+    <button id="backup-export" type="button">書き出す</button>
+    <label class="file-button">読み込む<input id="backup-import" type="file" accept=".json,application/json" hidden></label>
+  </p>
+  <div id="backup-status" class="status"></div>
+
+  <h2>Little Arc</h2>
+  <p class="note">ほかのアプリから開いたリンクを小窓で開く機能の設定と、判定のログは <a href="little-arc-log.html">別のページ</a> にあります。</p>
+
+  <script src="options.js" type="module"></script>
+</body>
+</html>

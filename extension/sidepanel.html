@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Sidebar</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div id="main-view" class="view">
+    <div id="favorites" class="favorites drop-area"></div>
+    <div id="space-name" class="space-name"></div>
+    <div id="pinned" class="tree drop-area"></div>
+    <div id="today-section" class="today-section">
+      <div id="divider" class="divider-row"><span class="divider"></span><button id="clear" type="button" class="clear" tabindex="-1"></button></div>
+      <div id="new-tab" class="row new-tab" role="button" tabindex="0"></div>
+      <div id="today" class="tree"></div>
+    </div>
+  </div>
+  <div id="archive-view" class="view" hidden>
+    <div class="archive-head">
+      <button id="archive-back" type="button" class="icon-button" tabindex="-1"></button>
+      <input id="archive-search" class="search" type="search" spellcheck="false" placeholder="検索">
+    </div>
+    <div id="archive-list" class="tree"></div>
+  </div>
+  <div id="space-bar" class="space-bar"></div>
+  <div id="menu" class="menu" hidden></div>
+  <div id="toast" class="toast" hidden></div>
+  <script src="sidepanel.js" type="module"></script>
+</body>
+</html>

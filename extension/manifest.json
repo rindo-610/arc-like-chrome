@@ -1,0 +1,82 @@
+{
+  "manifest_version": 3,
+  "name": "Arc-like",
+  "version": "1.0.0",
+  "description": "Arc 風のサイドバー・スペース・コマンドバー・Peek・Little Arc・Live Folders を Chrome で使う。ピン留めはブックマークに保存する",
+  "minimum_chrome_version": "155",
+  "permissions": [
+    "sidePanel",
+    "tabs",
+    "bookmarks",
+    "history",
+    "search",
+    "storage",
+    "favicon",
+    "sessions",
+    "scripting",
+    "alarms",
+    "offscreen",
+    "clipboardWrite",
+    "webNavigation"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "sw.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "サイドバーを開く"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["edge.js", "cmdbar.js", "peek.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["sidepanel.html", "palette.html"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "commands": {
+    "toggle-sidebar": {
+      "suggested_key": { "default": "Alt+S", "mac": "Alt+S" },
+      "description": "サイドバーを開閉する（Arc と同じ Cmd+S を chrome://extensions/shortcuts で設定する）"
+    },
+    "open-command-bar": {
+      "suggested_key": { "default": "Alt+T", "mac": "Alt+T" },
+      "description": "コマンドバーを開く（新しいタブで開く。Arc と同じ Cmd+T を設定する）"
+    },
+    "open-command-bar-current": {
+      "description": "今のタブの URL を変えるコマンドバーを開く（Arc と同じ Cmd+L を設定する）"
+    },
+    "copy-url": {
+      "description": "今のページの URL をコピーする（Arc と同じ Cmd+Shift+C を設定する）"
+    },
+    "move-to-main": {
+      "suggested_key": { "default": "Alt+O", "mac": "Alt+O" },
+      "description": "小窓のタブをメインのウィンドウへ移す（Arc と同じ Cmd+O を設定する）"
+    },
+    "collapse-all-folders": {
+      "description": "今のスペースのフォルダをすべて閉じる"
+    },
+    "expand-all-folders": {
+      "description": "今のスペースのフォルダをすべて開く"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; connect-src https://api.github.com"
+  }
+}
